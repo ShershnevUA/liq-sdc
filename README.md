@@ -1,4 +1,4 @@
-# meteor_liqpay-sdk
+# liq-sdk
 
 Just copied Liqpay SDK npm wrapper([AntuanKhanna/liqpay-sdk]) without 'crypto' dependency
 
@@ -9,7 +9,7 @@ may differ from the one in `lib/liqpay.js`.
 ## Install
 
 ```sh
-$ npm install --save meteor_liqpay-sdk
+$ npm install --save liq-sdk
 ```
 
 ## Usage
