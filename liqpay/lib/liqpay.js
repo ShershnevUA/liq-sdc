@@ -17,7 +17,7 @@
  *
  * EXTENSION INFORMATION
  *
- * LIQPAY API       https://www.liqpay.com/ru/doc
+ * LIQPAY API       https://www.liqpay.ua/documentation/ru
  *
  */
 var request = require('request');
@@ -30,39 +30,39 @@ var crypto  = require('crypto');
  *
  * @param string $public_key
  * @param string $private_key
- * 
+ *
  * @throws InvalidArgumentException
  */
 module.exports = function(public_key, private_key) {
-	
+
 	// API host
-	this.host = "https://www.liqpay.com/api/";
+	this.host = "https://www.liqpay.ua/api/";
 
 	/**
-	* Call API
-	*
-	* @param string $path
-	* @param Object $params
-	* @param function $callback
-	*
-	* @return Object
-	*/
+	 * Call API
+	 *
+	 * @param string $path
+	 * @param Object $params
+	 * @param function $callback
+	 *
+	 * @return Object
+	 */
 	this.api = function(path, params, callback, callbackerr){
 
 		if(!params.version)
 			throw new Error('version is null');
 
-		params.public_key = public_key;		
+		params.public_key = public_key;
 		var data = new Buffer(JSON.stringify(params)).toString('base64');
 		var signature = this.str_to_sign(private_key + data + private_key);
 
 		request.post(this.host + path, { form: {data : data, signature : signature}}, function (error, response, body) {
-		        if (!error && response.statusCode == 200) {
-		            callback( JSON.parse(body) )
-		        }else{
-		        	callbackerr(error, response);
-		        }
-		    }
+				if (!error && response.statusCode == 200) {
+					callback( JSON.parse(body) )
+				}else{
+					callbackerr(error, response);
+				}
+			}
 		);
 	};
 
@@ -73,7 +73,7 @@ module.exports = function(public_key, private_key) {
 	 * @param Object $params
 	 *
 	 * @return string
-	 * 
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	this.cnb_form = function(params){
@@ -86,11 +86,11 @@ module.exports = function(public_key, private_key) {
 		var data = new Buffer(JSON.stringify(params)).toString('base64');
 		var signature = this.str_to_sign(private_key + data + private_key);
 
-		return '<form method="POST" action="https://www.liqpay.com/api/3/checkout" accept-charset="utf-8">' +
-	                '<input type="hidden" name="data" value="'+data+'" />' +
-	                '<input type="hidden" name="signature" value="'+signature+'" />' +                
-	                '<input type="image" src="//static.liqpay.com/buttons/p1'+language+'.radius.png" name="btn_text" />' +
-	            '</form>';
+		return '<form method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">' +
+			'<input type="hidden" name="data" value="'+data+'" />' +
+			'<input type="hidden" name="signature" value="'+signature+'" />' +
+			'<input type="image" src="//static.liqpay.ua/buttons/p1'+language+'.radius.png" name="btn_text" />' +
+			'</form>';
 
 	};
 
@@ -101,15 +101,15 @@ module.exports = function(public_key, private_key) {
 	 * @param Object $params
 	 *
 	 * @return string
-	 * 
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	this.cnb_signature = function(params){
-		
+
 		params = this.cnb_params(params);
 		var data = new Buffer(JSON.stringify(params)).toString('base64');
 		return this.str_to_sign(private_key + data + private_key);
-		
+
 	};
 
 
@@ -119,15 +119,15 @@ module.exports = function(public_key, private_key) {
 	 * @param Object $params
 	 *
 	 * @return Object $params
-	 * 
+	 *
 	 * @throws InvalidArgumentException
 	 */
 	this.cnb_params = function(params){
-		
+
 		params.public_key = public_key;
 
 		if(!params.version)
-			throw new Error('version is null');			
+			throw new Error('version is null');
 		if(!params.amount)
 			throw new Error('amount is null');
 		if(!params.currency)
@@ -149,26 +149,26 @@ module.exports = function(public_key, private_key) {
 	 */
 	this.str_to_sign = function(str){
 		var sha1 = crypto.createHash('sha1');
-			sha1.update(str);
-		return sha1.digest('base64');			
+		sha1.update(str);
+		return sha1.digest('base64');
 	};
-	
-	
+
+
 	/**
-	* Return Form Object
-	*/
-	  this.cnb_object = function(params) {
-	
-	    var language = "ru";
-	    if(params.language)
-	      language = params.language;
-	
-	    params = this.cnb_params(params);
-	    var data = new Buffer(JSON.stringify(params)).toString('base64');
-	    var signature = this.str_to_sign(private_key + data + private_key);
-	
-	    return { data: data, signature: signature };
-	  };
+	 * Return Form Object
+	 */
+	this.cnb_object = function(params) {
+
+		var language = "ru";
+		if(params.language)
+			language = params.language;
+
+		params = this.cnb_params(params);
+		var data = new Buffer(JSON.stringify(params)).toString('base64');
+		var signature = this.str_to_sign(private_key + data + private_key);
+
+		return { data: data, signature: signature };
+	};
 
 	return this;
 };
